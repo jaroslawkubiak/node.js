@@ -1,6 +1,7 @@
 const fs = require("fs");
 const http = require("http");
 const url = require("url");
+const replaceTemplate = require("./modules/replaceTemplate");
 
 //////////////////////////////////////////////
 // WORKING WITH FILES
@@ -30,27 +31,41 @@ const url = require("url");
 
 //////////////////////////////////////////////
 // SERVER
+
+// uploading page templates
+const tempOverview = fs.readFileSync(`${__dirname}/templates/template-overview.html`, "utf-8");
+const tempCard = fs.readFileSync(`${__dirname}/templates/template-card.html`, "utf-8");
+const tempProduct = fs.readFileSync(`${__dirname}/templates/template-product.html`, "utf-8");
+
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
-const dataObject = JSON.parse(data);
+const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-  console.log(`${Date.now()} : ${req.url}`);
+  const { query, pathname } = url.parse(req.url, true);
 
-  const pathName = req.url;
+  //overview
+  if (pathname === "/" || pathname === "/overview") {
+    res.writeHead(200, { "Content-type": "text/html" });
 
-  if (pathName === "/" || pathName === "/overview") {
-    res.end(`This is a overview`);
-  } else if (pathName === "/product") {
-    res.end("<h2>This is a PRODUCT page</h2>");
-  } else if (pathName === "/api") {
-    res.writeHead(200, { "Content-type": "application/json" });
-    res.end(data);
+    // create string with products cards
+    const cardsHtml = dataObj.map(el => replaceTemplate(tempCard, el)).join("");
+    const output = tempOverview.replace(/{%PRODUCT_CARDS%}/g, cardsHtml);
+    res.end(output);
+
+    //product
+  } else if (pathname === "/product") {
+    const product = dataObj[query.id];
+    res.writeHead(200, { "Content-type": "text/html" });
+    const output = replaceTemplate(tempProduct, product);
+    res.end(output);
+
+    // not found
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
       "my-own-header": "hello there",
     });
-    res.end("<h1>page not found</h1>");
+    res.end("<h1>Page not found</h1>");
   }
 });
 
