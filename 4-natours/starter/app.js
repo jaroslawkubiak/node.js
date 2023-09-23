@@ -8,26 +8,36 @@ const app = express();
 // adding middleware
 app.use(express.json());
 
+// creating our own middleware
+// all middleware func have access to req i res object and to next()
+app.use((req, res, next) => {
+  console.log('log middleware');
+  // musimy ZAWSZE wykonać next()
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-// GET request for tours
-// ten callback nazywamy route handler
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
+    requested: req.requestTime,
     data: {
       tours: tours,
     },
   });
-});
+};
 
-// GET - get info about specified tour
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
   const tour = tours.find((el) => el.id === Number(req.params.id));
-
   // if tour od given id doesnt exist = send error
   if (!tour) {
     res.status(404).json({ status: 'fail', message: 'Invalid id' });
@@ -39,10 +49,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
       },
     });
   }
-});
+};
 
-// POST request to create new tour
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
   //   const newId = tours[tours.length - 1].id + 1;
   const newId = tours.length;
   const newTour = Object.assign({ id: newId }, req.body);
@@ -60,10 +69,9 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
-});
+};
 
-// PATCH - update tour info
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
   if (Number(req.params.id) > tours.length) {
     return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
   }
@@ -75,10 +83,9 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       tour: updatedTour,
     },
   });
-});
+};
 
-// DELETE tour by id
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = (req, res) => {
   if (Number(req.params.id) > tours.length) {
     return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
   }
@@ -87,7 +94,29 @@ app.delete('/api/v1/tours/:id', (req, res) => {
     status: 'success',
     data: null,
   });
-});
+};
+
+// // one way
+// // GET request for tours
+// app.get('/api/v1/tours', getAllTours);
+// // GET - get info about specified tour
+// app.get('/api/v1/tours/:id', getTour);
+// // POST request to create new tour
+// app.post('/api/v1/tours', createTour);
+// // PATCH - update tour info
+// app.patch('/api/v1/tours/:id', updateTour);
+// // DELETE tour by id
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+// second way - using route
+// możemy łączyć kilka metod do jednego endpointa
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 const port = 3000;
 // starting server
