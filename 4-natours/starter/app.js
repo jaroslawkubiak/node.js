@@ -7,14 +7,19 @@ const userRouter = require('./routes/userRoutes');
 
 // creating app
 const app = express();
-
 // 1) MIDDLEWARES
-app.use(morgan('dev'));
+console.log(`You are on ${process.env.NODE_ENV}`);
+// run this only in development env
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 app.use(express.json());
+
+//serving static files
+app.use(express.static(`${__dirname}/public`));
+
 // creating our own middleware
 // all middleware func have access to req i res object and to next()
 app.use((req, res, next) => {
-  console.log('log middleware');
+  console.log('FIRST MIDDLEWARE');
   // musimy ZAWSZE wykonać next()
   next();
 });
@@ -27,5 +32,4 @@ app.use((req, res, next) => {
 // 3) Routes
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
-
 module.exports = app;
