@@ -5,16 +5,13 @@ dotenv.config({ path: './config.env' });
 
 const app = require('./app');
 
-mongoose
-  .connect(process.env.DATABASE_LOCAL, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-  })
-  .then((con) => {
-    console.log(con.connections);
-    console.log('DB conn success');
-  });
+const DB = process.env.DATABASE.replace(
+  '<PASSWORD>',
+  process.env.DATABASE_PASSWORD,
+);
+
+// connect to DB
+mongoose.connect(DB).then(() => console.log('DB conn successful!'));
 
 // 4) START server
 const port = process.env.PORT || 3000;

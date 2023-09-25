@@ -3,15 +3,15 @@ const tourController = require('../controllers/tourController');
 
 const router = express.Router();
 
-//specjalny middleware - uruchamia się tylko w przypadku użycia konkretnych/podanych parametrów
-router.param('id', tourController.checkID);
+// specjalny middleware - uruchamia się tylko w przypadku użycia konkretnych/podanych parametrów
+// router.param('id', tourController.checkID);
 
 // możemy łączyć kilka metod do jednego endpointa
 router
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.checkBody, tourController.createTour);
-  
+  .post(tourController.createTour);
+
 router
   .route('/:id')
   .get(tourController.getTour)
