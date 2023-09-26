@@ -1,11 +1,22 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
+4-natours/starter/config.env
 /.parcel-cache
 /1-node-farm/starter/node_modules
 /2-how-node-works/starter/node_modules
 /3-asynchronous-JS/starter/node_modules
 /4-natours/starter/node_modules
+/4-natours/after-section-06/node_modules
+/4-natours/after-section-07/node_modules
+/4-natours/after-section-08/node_modules
+/4-natours/after-section-09/node_modules
+/4-natours/after-section-10/node_modules
+/4-natours/after-section-11/node_modules
+/4-natours/after-section-12/node_modules
+/4-natours/after-section-13/node_modules
+/4-natours/after-section-14/node_modules
+
 /.pnp
 .pnp.js
 
@@ -14,7 +25,6 @@
 
 # production
 /build
-
 # misc
 .DS_Store
 .env.local

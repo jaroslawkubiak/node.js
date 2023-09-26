@@ -16,13 +16,13 @@ app.use(express.json());
 //serving static files
 app.use(express.static(`${__dirname}/public`));
 
-// creating our own middleware
-// all middleware func have access to req i res object and to next()
-app.use((req, res, next) => {
-  console.log('FIRST MIDDLEWARE');
-  // musimy ZAWSZE wykonać next()
-  next();
-});
+// // creating our own middleware
+// // all middleware func have access to req i res object and to next()
+// app.use((req, res, next) => {
+//   console.log('FIRST MIDDLEWARE');
+//   // musimy ZAWSZE wykonać next()
+//   next();
+// });
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();

@@ -4,7 +4,55 @@ const Tour = require('./../models/tourModel');
 // Route handlers
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    //build query
+    // 1)filtering
+    //tworzymy twardą kopię obiektu aby usunąć z niego (z query) pola nieużywane w DB np page
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    //2) advanced filtering
+    let queryStr = JSON.stringify(queryObj);
+    //przykładowe zapytanie z postmana: 127.0.0.1:3000/api/v1/tours?duration[gte]=5&difficulty=easy&price[lt]=1000
+    queryStr = JSON.parse(
+      queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`),
+    );
+
+    //jako obiekt filtrujący używamy req.query pomniejszony o nieużywane pola w bazie jak : page, limit itp
+    let query = Tour.find(queryStr);
+    if (req.query.sort) {
+      // rozdzielamy string sort po przecinku i łączymy w strong po spacji
+      const sortBy = req.query.sort.split(',').join(' ');
+      query.sort(sortBy);
+    } else {
+      query = query.sort('-createAt');
+    }
+
+    // 2) sorting
+
+    //127.0.0.1:3000/api/v1/tours?sort=-price,ratingAverage
+    // sort = price -> sortuje ASC po price. jak podamy drugi parametr po przecinku to gdy price jest identyczna,
+    // użyje drugiego paramatru do sortowania ASC
+    // gdy damy minus przed nazwą pola - sortuje DESC
+
+    // console.log(req.query);
+    //execute query
+    const tours = await query;
+
+    // one way
+    // const tours = await Tour.find({
+    //   duration: 5,
+    //   difficulty: 'easy',
+    // });
+
+    // //second way using mongoose methods
+    // const tours = await Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    // send response
     res.status(200).json({
       status: 'Success',
       results: tours.length,
