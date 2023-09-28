@@ -6,8 +6,6 @@
 /2-how-node-works/starter/node_modules
 /3-asynchronous-JS/starter/node_modules
 /4-natours/starter/node_modules
-/4-natours/after-section-06/node_modules
-/4-natours/after-section-07/node_modules
 /4-natours/after-section-08/node_modules
 /4-natours/after-section-09/node_modules
 /4-natours/after-section-10/node_modules
@@ -20,6 +18,7 @@
 # config files
 /4-natours/starter/config.env
 /4-natours/after-section-08/config.env
+/4-natours/after-section-09/config.env
 
 # testing
 /coverage
