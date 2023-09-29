@@ -15,10 +15,15 @@
 /4-natours/after-section-14/node_modules
 /.pnp
 .pnp.js
+
 # config files
 /4-natours/starter/config.env
 /4-natours/after-section-08/config.env
 /4-natours/after-section-09/config.env
+/4-natours/after-section-10/config.env
+/4-natours/after-section-11/config.env
+/4-natours/after-section-12/config.env
+/4-natours/after-section-13/config.env
 
 # testing
 /coverage
