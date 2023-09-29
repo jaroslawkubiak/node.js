@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema({
   photo: String,
   password: {
     type: String,
-    required: [true, 'Please provide a password']
+    required: [true, 'Please provide a password'],
+    select: false
   },
   passwordConfirm: {
     type: String,
@@ -33,7 +34,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// pre działa między pobraniem danych z zapisaniem ich do bazy
+// pre działa między pobraniem danych a zapisaniem ich do bazy
 userSchema.pre('save', async function(next) {
   // only run this func if password was modyfied
   if (!this.isModified('password')) return next();
@@ -45,6 +46,13 @@ userSchema.pre('save', async function(next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+userSchema.methods.correctPassword = async function(
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 const User = mongoose.model('User', userSchema);
 
